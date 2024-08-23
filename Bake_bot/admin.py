@@ -1,7 +1,12 @@
 from django.contrib import admin
 
 from .models import Customer, Product, Product_properties, \
-      Product_parameters, Order
+      Product_parameters, Order, Cake
+
+
+@admin.register(Cake)
+class CakeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'price', 'weight')
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
@@ -22,5 +27,5 @@ class Product_parametersAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number', 'customer_chat_id', 'order_details','order_status', 'order_price', 'comments')
+    list_display = ('order_number', 'customer_chat_id', 'order_details', 'order_status', 'order_price', 'comments')
     list_filter = ["order_status"]
