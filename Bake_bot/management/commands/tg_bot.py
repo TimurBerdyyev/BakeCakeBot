@@ -1,3 +1,7 @@
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Bake_Cake_bot.settings')
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
 from environs import Env
 
 from django.core.management.base import BaseCommand
@@ -215,7 +219,7 @@ def make_cake(update: Update, context):
         orders = Order.objects.filter(customer_chat_id=update.effective_message.chat_id)
         for order in orders:
             update.message.reply_text(
-            f'Заказ {order.order_number}: цена {order.order_price} руб., статус "{order.order_status}",' 
+            f'Заказ {order.order_number}: цена {order.order_price} руб., статус "{order.order_status}",'
             f'детали - {order.order_details}',
             )
         context.bot.send_message(
@@ -267,8 +271,8 @@ def choose_option2(update: Update, context: CallbackContext):
         return MAIN
     option3_keyboard = [
                     ['Без топпинга'],
-                    ['Белый соус', 'Карамельный сироп'], 
-                    ['Кленовый сироп', 'Клубничный сироп'], 
+                    ['Белый соус', 'Карамельный сироп'],
+                    ['Кленовый сироп', 'Клубничный сироп'],
                     ['Черничный сироп', 'Молочный шоколад'],
                     ['ГЛАВНОЕ МЕНЮ']
                     ]
@@ -291,8 +295,8 @@ def choose_option3(update: Update, context: CallbackContext):
         return MAIN
     option4_keyboard = [
                     ['Без ягод'],
-                    ['Ежевика', 'Малина'], 
-                    ['Голубика', 'Клубника'], 
+                    ['Ежевика', 'Малина'],
+                    ['Голубика', 'Клубника'],
                     ['ГЛАВНОЕ МЕНЮ']
                     ]
     update.message.reply_text('Выберите ягоды',
@@ -313,9 +317,9 @@ def choose_option4(update: Update, context: CallbackContext):
         )
         return MAIN
     option5_keyboard = [
-                       ['Без декора'], 
-                       ['Фисташки', 'Безе', 'Фундук'], 
-                       ['Пекан', 'Маршмеллоу', 'Марципан'], 
+                       ['Без декора'],
+                       ['Фисташки', 'Безе', 'Фундук'],
+                       ['Пекан', 'Маршмеллоу', 'Марципан'],
                        ['ГЛАВНОЕ МЕНЮ']
                        ]
     update.message.reply_text('Выберите декор',
