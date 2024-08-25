@@ -14,6 +14,11 @@ class Cake(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Торт'
+        verbose_name_plural = 'Торты'
+
+
 class Customer(models.Model):
     external_id = models.PositiveIntegerField(
         verbose_name='Внешний ID покупателя',

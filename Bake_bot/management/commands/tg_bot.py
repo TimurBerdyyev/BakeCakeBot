@@ -3,7 +3,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Bake_Cake_bot.settings')
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 import telegram
-from pprint import pprint
 from environs import Env
 
 from django.core.management.base import BaseCommand
@@ -25,7 +24,7 @@ from order_cake import send_image
 
 env = Env()
 env.read_env()
-
+id_for_send = env.str('ID_FOR_SEND')
 telegram_token = env.str('TG_TOKEN')
 bot = telegram.Bot(token=telegram_token)
 
@@ -511,7 +510,6 @@ def confirm_order(update: Update, context: CallbackContext):
         temp_order.update(
             {
                 'Тип заказа': context.user_data.get('Тип заказа'),
-                'Торт': context.user_data.get('Торт'),
                 'Количество уровней': context.user_data.get('Количество уровней'),
                 'Форма': context.user_data.get('Форма'),
                 'Топпинг': context.user_data.get('Топпинг'),
@@ -584,7 +582,7 @@ def send_order(update: Update, context: CallbackContext):
         if context.user_data['Срочность'] == 'Срочно':
             total_price *= 1.2
 
-        order_keyboard = [['Собрать торт'], ['Заказать торт'], ['Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        order_keyboard = [['Собрать торт', 'Заказать торт', 'Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
         update.message.reply_text(
             f'Заказ принят! Стоимость вашего заказа {total_price} руб.',
             reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
@@ -620,7 +618,7 @@ def send_order_2(update: Update, context: CallbackContext):
         if context.user_data['Надпись'][0] == 'Есть':
             price += 500
 
-        order_keyboard = [['Собрать торт'], ['Заказать торт'], ['Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        order_keyboard = [['Собрать торт', 'Заказать торт', 'Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
         update.message.reply_text(
             f'Заказ принят! Стоимость вашего заказа {price} руб.',
             reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
@@ -643,16 +641,21 @@ def create_new_order(chat_id, details, price):
     temp_order.clear()
 
 def create_new_order_2(chat_id, temp_order, price):
-
+    cake = Cake.objects.get(name=temp_order['Торт'])
     order = Order.objects.create(
         order_type=temp_order['Тип заказа'],
         customer_chat_id=chat_id,
-        cake_name=Cake.objects.get(name=temp_order['Торт']),
+        cake_name=cake,
         order_price=price,
+        order_details=str(temp_order)
     )
     order.save()
+    bot.send_message(chat_id=id_for_send,
+                     text=f"Новый заказ №{order.id}"
+                          f" {temp_order['Тип заказа']}"
+                          f" {cake.name} "
+                          f"Адрес доставки {temp_order['Адрес']}")
     temp_order.clear()
-
 
 # БОТ - нераспознанная команда
 def unknown(update, context):
