@@ -3,6 +3,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 from pathlib import Path
+from Bake_bot.models import Cake
 
 load_dotenv()
 tg_token = os.environ["TG_TOKEN"]
@@ -26,7 +27,7 @@ cakes = [
         'cake_image': 'cheescake.jpg',
         'cake_description': 'нежный чизкейк с кокосовым пудингом, арахисом и кокосовыми хлопьями',
         'cake_price': 5200,
-        'cake_weight': 2500
+        'cake_weight': 2.5
     },
     {
         'cake_name': 'Вишневый торт',
@@ -65,11 +66,22 @@ cakes = [
     }
 ]
 
-def main():
+def send_images():
 
     for cake in cakes:
         send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'], tg_chat_id)
 
+def main():
+
+    for cake in cakes:
+        cake_for_order = Cake.objects.create(
+            name=cake['cake_name'],
+            image=cake['cake_image'],
+            description=cake['cake_description'],
+            price=cake['cake_price'],
+            weight=cake['cake_weight'],
+        )
+        cake_for_order.save()
 
 
 if __name__ == "__main__":

@@ -634,7 +634,6 @@ def send_order_2(update: Update, context: CallbackContext):
 # создаем заказ в БД
 def create_new_order(chat_id, details, price):
     order = Order.objects.create(
-        order_number=Order.objects.latest('order_number').order_number + 1,
         customer_chat_id=chat_id,
         order_details=details,
         order_price=price,
@@ -648,13 +647,11 @@ def create_new_order_2(chat_id, temp_order, price):
     print(price)
 
     order = Order.objects.create(
-        order_number=Order.objects.latest('order_number').order_number + 1,
         customer_chat_id=chat_id,
-        order_cake_name=temp_order['Торт'],
+        cake_name=Cake.objects.get(name=temp_order['Торт']),
         order_price=price,
     )
     order.save()
-    print(Order.objects.all())
     temp_order.clear()
 
 
