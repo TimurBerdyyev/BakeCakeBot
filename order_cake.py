@@ -1,22 +1,19 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
 import os
 import requests
 import telegram
 from dotenv import load_dotenv
 from pathlib import Path
-
+from Bake_bot.models import Cake
 
 load_dotenv()
-telegram_token = os.environ["TG_TOKEN"]
+tg_token = os.environ["TG_TOKEN"]
 tg_chat_id = os.environ["TG_CHAT_ID"]
-bot = telegram.Bot(token=telegram_token)
+bot = telegram.Bot(token=tg_token)
 
-
-def send_image(cake_image, cake_name, cake_description, cake_price, cake_weight):
+def send_image(cake_image, cake_name, cake_description, cake_price, cake_weight, tg_chat_id):
     """Опубликовать картинку торта с описанием и ценой"""
     path_to_image = Path('images', cake_image)
-    url = f"https://api.telegram.org/bot{telegram_token}/sendPhoto"
+    url = f"https://api.telegram.org/bot{tg_token}/sendPhoto"
     files = {}
     with open(path_to_image, 'rb') as image:
         files["photo"] = image
@@ -30,7 +27,7 @@ cakes = [
         'cake_image': 'cheescake.jpg',
         'cake_description': 'нежный чизкейк с кокосовым пудингом, арахисом и кокосовыми хлопьями',
         'cake_price': 5200,
-        'cake_weight': 2500
+        'cake_weight': 2.5
     },
     {
         'cake_name': 'Вишневый торт',
@@ -69,11 +66,24 @@ cakes = [
     }
 ]
 
-def main():
+def send_images():
+
     for cake in cakes:
-        send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'],
-                   cake['cake_weight'])
+        send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'], tg_chat_id)
+
+def main():
+
+    for cake in cakes:
+        cake_for_order = Cake.objects.create(
+            name=cake['cake_name'],
+            image=cake['cake_image'],
+            description=cake['cake_description'],
+            price=cake['cake_price'],
+            weight=cake['cake_weight'],
+        )
+        cake_for_order.save()
 
 
 if __name__ == "__main__":
     main()
+
