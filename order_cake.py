@@ -1,3 +1,5 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
 import os
 import requests
 import telegram
@@ -6,7 +8,7 @@ from pathlib import Path
 
 
 load_dotenv()
-telegram_token = os.environ["TELEGRAM_TOKEN"]
+telegram_token = os.environ["TG_TOKEN"]
 tg_chat_id = os.environ["TG_CHAT_ID"]
 bot = telegram.Bot(token=telegram_token)
 
@@ -67,5 +69,11 @@ cakes = [
     }
 ]
 
-for cake in cakes:
-    send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'])
+def main():
+    for cake in cakes:
+        send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'],
+                   cake['cake_weight'])
+
+
+if __name__ == "__main__":
+    main()

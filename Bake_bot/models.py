@@ -7,7 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class Cake(models.Model):
     name = models.CharField(verbose_name='Название торта', max_length=50)
     image = models.CharField(verbose_name='Картинка торта', max_length=50)
-    description = models.CharField(verbose_name='Описание', max_length=50)
+    description = models.CharField(verbose_name='Описание', max_length=100)
     price = models.PositiveIntegerField(verbose_name='Цена')
     weight = models.DecimalField(verbose_name='Вес', max_digits=4, decimal_places=2)
 
