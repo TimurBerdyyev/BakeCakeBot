@@ -70,11 +70,10 @@ class Product_parameters(models.Model):
 
 
 class Order(models.Model):
-    order_number = models.PositiveIntegerField("Номер заказа", null=True, default=None, unique=True)
     customer = models.CharField(verbose_name='Имя Покупателя', null=True, blank=True, max_length=256)
     customer_chat_id = models.CharField(verbose_name='Chat ID Покупателя', null=True, blank=True, max_length=256)
     order_details = jsonfield.JSONField(verbose_name='Детали заказа', default='Пока нет ничего')
-    order_price  = models.PositiveIntegerField(verbose_name='Цена заказа')
+    order_price = models.PositiveIntegerField(verbose_name='Цена заказа')
     Processing = 'Заявка обрабатывается'
     Cooking = 'Готовим ваш торт'
     Transport = 'Продукт в пути'
@@ -91,13 +90,13 @@ class Order(models.Model):
     delivery_date = models.DateField(verbose_name='Дата доставки', null=True, blank=True)
     delivery_time = models.TimeField(verbose_name='Время доставки', null=True, blank=True)
     cake_name = models.ForeignKey(Cake, verbose_name='Название торта', related_name='orders', blank=True, null=True, on_delete=models.CASCADE)
-    Assembly = 'Сборка'
-    Ordering = 'Заказ'
+    Assembly = 'Собрать свой торт'
+    Ordering = 'Заказать торт'
     order_types = [
         (Assembly, 'Собрать свой торт'),
         (Ordering, 'Заказать торт')
     ]
-    order_type = models.CharField(verbose_name='Тип заказа', max_length=6, choices=order_types, default=Ordering,)
+    order_type = models.CharField(verbose_name='Тип заказа', max_length=17, choices=order_types, default=Ordering,)
 
     def __str__(self):
         return self.delivery_time.isoformat(timespec='minutes')
