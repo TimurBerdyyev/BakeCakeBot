@@ -4,17 +4,15 @@ import telegram
 from dotenv import load_dotenv
 from pathlib import Path
 
-
 load_dotenv()
-telegram_token = os.environ["TELEGRAM_TOKEN"]
+tg_token = os.environ["TG_TOKEN"]
 tg_chat_id = os.environ["TG_CHAT_ID"]
-bot = telegram.Bot(token=telegram_token)
+bot = telegram.Bot(token=tg_token)
 
-
-def send_image(cake_image, cake_name, cake_description, cake_price, cake_weight):
+def send_image(cake_image, cake_name, cake_description, cake_price, cake_weight, tg_chat_id):
     """Опубликовать картинку торта с описанием и ценой"""
     path_to_image = Path('images', cake_image)
-    url = f"https://api.telegram.org/bot{telegram_token}/sendPhoto"
+    url = f"https://api.telegram.org/bot{tg_token}/sendPhoto"
     files = {}
     with open(path_to_image, 'rb') as image:
         files["photo"] = image
@@ -67,5 +65,13 @@ cakes = [
     }
 ]
 
-for cake in cakes:
-    send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'])
+def main():
+
+    for cake in cakes:
+        send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'], tg_chat_id)
+
+
+
+if __name__ == "__main__":
+    main()
+

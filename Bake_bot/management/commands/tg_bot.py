@@ -248,8 +248,9 @@ def make_cake(update: Update, context):
     if user_input == 'Заказать торт':
         images_keyboard = [['Чизкейк', 'Вишневый торт', 'Шоколадный бисквит', 'Шоколадная бомба', 'Малиново-йогуртовый', 'Ванильный бисквит'], ['ГЛАВНОЕ МЕНЮ']]
         cakes = Cake.objects.all()
+        tg_chat_id = update.effective_chat.id
         for cake in cakes:
-            send_image(cake.image, cake.name, cake.description, cake.price, cake.weight)
+            send_image(cake.image, cake.name, cake.description, cake.price, cake.weight, tg_chat_id)
         update.message.reply_text(
             'Начнем! Выберите торт',
             reply_markup=ReplyKeyboardMarkup(images_keyboard, resize_keyboard=True, one_time_keyboard=True)
@@ -501,7 +502,7 @@ def confirm_order(update: Update, context: CallbackContext):
         temp_order.update(
             {
                 'Тип заказа': context.user_data.get('Тип заказа'),
-                'Торт': context.user_data('Торт'),
+                'Торт': context.user_data.get('Торт'),
                 'Количество уровней': context.user_data.get('Количество уровней'),
                 'Форма': context.user_data.get('Форма'),
                 'Топпинг': context.user_data.get('Топпинг'),
@@ -526,7 +527,7 @@ def confirm_order(update: Update, context: CallbackContext):
         temp_order.update(
             {
                 'Тип заказа': context.user_data.get('Тип заказа'),
-                'Торт': context.user_data('Торт'),
+                'Торт': context.user_data.get('Торт'),
                 'Надпись': context.user_data.get('Надпись'),
                 'Комментарии': context.user_data.get('Комментарии'),
                 'Адрес': context.user_data.get('Адрес'),
