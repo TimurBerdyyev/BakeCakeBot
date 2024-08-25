@@ -242,12 +242,19 @@ def make_cake(update: Update, context):
             reply_markup=ReplyKeyboardMarkup(option1_keyboard, resize_keyboard=True, one_time_keyboard=True)
         )
         return OPTION1
-    else:
-        unknown(update, context)
+    # else:
+    #     unknown(update, context)
 
     if user_input == 'Заказать торт':
-        images_keyboard = [['Чизкейк', 'Вишневый торт', 'Шоколадный бисквит', 'Шоколадная бомба', 'Малиново-йогуртовый', 'Ванильный бисквит'], ['ГЛАВНОЕ МЕНЮ']]
         cakes = Cake.objects.all()
+        images_keyboard = []
+        for i in range(0, len(cakes), 2):
+            row = [cakes[i].name]
+            if i + 1 < len(cakes):
+                row.append(cakes[i + 1].name)
+            images_keyboard.append(row)
+        images_keyboard.append(['ГЛАВНОЕ МЕНЮ'])
+
         tg_chat_id = update.effective_chat.id
         for cake in cakes:
             send_image(cake.image, cake.name, cake.description, cake.price, cake.weight, tg_chat_id)
