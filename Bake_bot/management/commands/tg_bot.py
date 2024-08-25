@@ -3,6 +3,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Bake_Cake_bot.settings')
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 import telegram
+from pprint import pprint
 from environs import Env
 
 from django.core.management.base import BaseCommand
@@ -26,7 +27,6 @@ env = Env()
 env.read_env()
 
 telegram_token = env.str('TG_TOKEN')
-tg_chat_id = os.environ["TG_CHAT_ID"]
 bot = telegram.Bot(token=telegram_token)
 
 logging.basicConfig(
@@ -53,7 +53,8 @@ logger = logging.getLogger(__name__)
     # предлагает подтвердить заказ, def confirm_order
     SEND_ORDER,  # считает стоимость заказа собранного торта, записывает заказ в БД, def send_order
     INSCRIPTION,  # записывает выбранный 'Торт', предлагает заказать 'Надпись', def choose_inscription
-) = range(16)
+    SEND_ORDER_2,  # считает стоимость заказа выбранного торта, записывает заказ в БД, def send_order_2
+) = range(17)
 
 prices = {}
 for parameter in Product_parameters.objects.filter(product_property__property_name__contains=''):
@@ -530,7 +531,7 @@ def confirm_order(update: Update, context: CallbackContext):
                                                                    one_time_keyboard=True))
         return SEND_ORDER
 
-    else:
+    if context.user_data.get('Тип заказа') == 'Заказать торт':
         temp_order.update(
             {
                 'Тип заказа': context.user_data.get('Тип заказа'),
@@ -582,7 +583,7 @@ def send_order(update: Update, context: CallbackContext):
         if context.user_data['Срочность'] == 'Срочно':
             total_price *= 1.2
 
-        order_keyboard = [['Собрать торт'], ['Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        order_keyboard = [['Собрать торт'], ['Заказать торт'], ['Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
         update.message.reply_text(
             f'Заказ принят! Стоимость вашего заказа {total_price} руб.',
             reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
@@ -602,6 +603,32 @@ def send_order_2(update: Update, context: CallbackContext):
         )
         return MAIN
 
+    if user_input == 'Нет':
+        update.message.reply_text(
+            'Заказать торт или посмотреть заказы?',
+            reply_markup=ReplyKeyboardMarkup(main_keyboard, resize_keyboard=True, one_time_keyboard=True)
+        )
+        return MAIN
+
+    if user_input == 'Да':
+        cake = Cake.objects.get(name=temp_order['Торт'])
+        if context.user_data['Срочность'] == 'Срочно':
+            price = int(cake.price * 1.2)
+        else:
+            price = cake.price
+        if context.user_data['Надпись'][0] == 'Есть':
+            price += 500
+
+        order_keyboard = [['Собрать торт'], ['Заказать торт'], ['Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        update.message.reply_text(
+            f'Заказ принят! Стоимость вашего заказа {price} руб.',
+            reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
+        logger.info(f"Итоговая цена {price} "
+                    f'Выбранные опции {temp_order}')
+
+        create_new_order_2(update.message.chat_id, temp_order, price)
+
+    return ORDER
 
 
 # создаем заказ в БД
@@ -612,7 +639,22 @@ def create_new_order(chat_id, details, price):
         order_details=details,
         order_price=price,
     )
-    order.save
+    order.save()
+    temp_order.clear()
+
+def create_new_order_2(chat_id, temp_order, price):
+    print(chat_id)
+    pprint(temp_order)
+    print(price)
+
+    order = Order.objects.create(
+        order_number=Order.objects.latest('order_number').order_number + 1,
+        customer_chat_id=chat_id,
+        order_cake_name=temp_order['Торт'],
+        order_price=price,
+    )
+    order.save()
+    print(Order.objects.all())
     temp_order.clear()
 
 
@@ -663,6 +705,7 @@ class Command(BaseCommand):
                 CONFIRM_ORDER: [MessageHandler(Filters.text & ~Filters.command, confirm_order)],
                 SEND_ORDER: [MessageHandler(Filters.text & ~Filters.command, send_order)],
                 INSCRIPTION: [MessageHandler(Filters.text & ~Filters.command, choose_inscription)],
+                SEND_ORDER_2: [MessageHandler(Filters.text & ~Filters.command, send_order_2)],
             },
             fallbacks=[MessageHandler(Filters.text & ~Filters.command, unknown)],
         allow_reentry=True,
