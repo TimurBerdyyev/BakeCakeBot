@@ -643,11 +643,9 @@ def create_new_order(chat_id, details, price):
     temp_order.clear()
 
 def create_new_order_2(chat_id, temp_order, price):
-    print(chat_id)
-    pprint(temp_order)
-    print(price)
 
     order = Order.objects.create(
+        order_type=temp_order['Тип заказа'],
         customer_chat_id=chat_id,
         cake_name=Cake.objects.get(name=temp_order['Торт']),
         order_price=price,
