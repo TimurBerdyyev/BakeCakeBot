@@ -420,6 +420,7 @@ def choose_option6(update: Update, context: CallbackContext):
                                                                one_time_keyboard=True))
     return OPTION7
 
+
 def choose_option7(update: Update, context: CallbackContext):
     user_input = update.effective_message.text
     context.user_data['Коммент'] = user_input
