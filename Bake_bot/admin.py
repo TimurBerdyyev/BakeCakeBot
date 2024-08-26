@@ -27,5 +27,6 @@ class Product_parametersAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer_chat_id', 'order_details', 'order_status', 'order_price', 'comments')
-    list_filter = ["order_status"]
+    list_display = ('id', 'order_details', 'cake_name', 'order_price', 'order_status')
+    list_filter = ['order_status', 'order_type']
+    list_editable = ('order_status', )

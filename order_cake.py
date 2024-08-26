@@ -1,4 +1,8 @@
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Bake_Cake_bot.settings')
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
 import requests
 import telegram
 from dotenv import load_dotenv
@@ -51,7 +55,7 @@ cakes = [
         'cake_weight': 2.8
     },
     {
-        'cake_name': 'Малиново-йогуртовый чизкейк',
+        'cake_name': 'Малиново-йогуртовый',
         'cake_image': 'raspberry_yogurt.jpg',
         'cake_description': 'подушка из брауни, незапеченый чизкейк с бельгийским шоколадом и малиной',
         'cake_price': 4800,
