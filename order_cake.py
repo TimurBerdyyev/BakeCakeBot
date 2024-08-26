@@ -66,13 +66,13 @@ cakes = [
     }
 ]
 
-def send_images():
 
+def send_images():
     for cake in cakes:
         send_image(cake['cake_image'], cake['cake_name'], cake['cake_description'], cake['cake_price'], cake['cake_weight'], tg_chat_id)
 
-def main():
 
+def main():
     for cake in cakes:
         cake_for_order = Cake.objects.create(
             name=cake['cake_name'],
@@ -86,4 +86,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
