@@ -225,7 +225,7 @@ def make_cake(update: Update, context):
         orders = Order.objects.filter(customer_chat_id=update.effective_message.chat_id)
         for order in orders:
             update.message.reply_text(
-            f'Заказ {order.order_number}: цена {order.order_price} руб., статус "{order.order_status}",'
+            f'Заказ {order.id}: цена {order.order_price} руб., статус "{order.order_status}",'
             f'детали - {order.order_details}',
             )
         context.bot.send_message(
@@ -582,7 +582,7 @@ def send_order(update: Update, context: CallbackContext):
         if context.user_data['Срочность'] == 'Срочно':
             total_price *= 1.2
 
-        order_keyboard = [['Собрать торт', 'Заказать торт', 'Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        order_keyboard = [['Собрать торт', 'Заказать торт'], ['ГЛАВНОЕ МЕНЮ']]
         update.message.reply_text(
             f'Заказ принят! Стоимость вашего заказа {total_price} руб.',
             reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
@@ -618,7 +618,7 @@ def send_order_2(update: Update, context: CallbackContext):
         if context.user_data['Надпись'][0] == 'Есть':
             price += 500
 
-        order_keyboard = [['Собрать торт', 'Заказать торт', 'Ваши заказы'], ['ГЛАВНОЕ МЕНЮ']]
+        order_keyboard = [['Собрать торт', 'Заказать торт'], ['ГЛАВНОЕ МЕНЮ']]
         update.message.reply_text(
             f'Заказ принят! Стоимость вашего заказа {price} руб.',
             reply_markup=ReplyKeyboardMarkup(order_keyboard, resize_keyboard=True, one_time_keyboard=True))
